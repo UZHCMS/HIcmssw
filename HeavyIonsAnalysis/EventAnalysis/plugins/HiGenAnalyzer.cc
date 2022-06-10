@@ -378,7 +378,7 @@ void HiGenAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       hev_.matchingID.push_back(i);
 
       if(p.numberOfMothers()==1){
-	hev_.mother_pdg.push_back(p.mother(0).pdgId());
+	hev_.mother_pdg.push_back(p.mother(0)->pdgId());
       }else{
 	hev_.mother_pdg.push_back(-1);
       }
