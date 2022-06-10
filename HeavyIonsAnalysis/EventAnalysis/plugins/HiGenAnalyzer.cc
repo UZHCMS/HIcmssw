@@ -72,6 +72,7 @@ struct HydjetEvent {
   std::vector<Int_t> sta;
   std::vector<Int_t> matchingID;
   std::vector<Int_t> nMothers;
+  std::vector<Int_t> mother_pdg;
   std::vector<std::vector<Int_t>> motherIndex;
   std::vector<Int_t> nDaughters;
   std::vector<std::vector<Int_t>> daughterIndex;
@@ -258,6 +259,7 @@ void HiGenAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   hev_.sube.clear();
   hev_.sta.clear();
   hev_.matchingID.clear();
+  hev_.mother_pdg.clear();
   hev_.nMothers.clear();
   hev_.motherIndex.clear();
   hev_.nDaughters.clear();
@@ -322,6 +324,7 @@ void HiGenAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       hev_.chg.push_back(charge);
       hev_.sta.push_back((*it)->status());
       hev_.matchingID.push_back(nparticles);
+      hev_.mother_pdg.push_back(-1);
 
       eta = fabs(eta);
       Int_t etabin = 0;
@@ -373,6 +376,13 @@ void HiGenAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }
       hev_.sta.push_back(p.status());
       hev_.matchingID.push_back(i);
+
+      if(p.numberOfMothers()==1){
+	hev_.mother_pdg.push_back(p.mother(0).pdgId());
+      }else{
+	hev_.mother_pdg.push_back(-1);
+      }
+
       hev_.nMothers.push_back(p.numberOfMothers());
       vector<int> tempMothers = getMotherIdx(parts, p);
       hev_.motherIndex.push_back(tempMothers);
@@ -463,6 +473,7 @@ void HiGenAnalyzer::beginJob() {
     hydjetTree_->Branch("pdg", &hev_.pdg);
     hydjetTree_->Branch("chg", &hev_.chg);
     hydjetTree_->Branch("matchingID", &hev_.matchingID);
+    hydjetTree_->Branch("mother_pdg", &hev_.mother_pdg);
     hydjetTree_->Branch("nMothers", &hev_.nMothers);
     hydjetTree_->Branch("motherIdx", &hev_.motherIndex);
     hydjetTree_->Branch("nDaughters", &hev_.nDaughters);
